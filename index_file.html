@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SENAI VIENA - Guia de Organização e Gestão do Tempo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #e8eaf0;
+    padding: 30px 15px;
+    color: #222;
+  }
+  .formulario {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+    overflow: hidden;
+  }
+  .cabecalho {
+    background: linear-gradient(135deg, #003399, #0055cc);
+    color: #fff;
+    padding: 28px 35px;
+  }
+  .cabecalho h1 { font-size: 26px; letter-spacing: 1px; margin-bottom: 14px; }
+  .cabecalho .info { display: flex; flex-wrap: wrap; gap: 8px 30px; font-size: 15px; }
+  .cabecalho .info span { background: rgba(255,255,255,0.15); padding: 5px 14px; border-radius: 20px; }
+  .corpo { padding: 30px 35px 35px; }
+  .pergunta { margin-bottom: 26px; }
+  .pergunta label { display: block; font-weight: 600; font-size: 15.5px; margin-bottom: 8px; color: #003399; }
+  .pergunta textarea {
+    width: 100%;
+    min-height: 75px;
+    padding: 10px 12px;
+    border: 1.5px solid #c5c9d4;
+    border-radius: 6px;
+    font-size: 14.5px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  .pergunta textarea:focus { outline: none; border-color: #0055cc; box-shadow: 0 0 0 3px rgba(0,85,204,0.12); }
+  .acoes { text-align: center; margin-top: 10px; }
+  .acoes button {
+    background: #003399;
+    color: #fff;
+    border: none;
+    padding: 14px 42px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .acoes button:hover { background: #0055cc; }
+  .acoes button:active { transform: scale(0.97); }
+  .acoes button:disabled { background: #8a93a8; cursor: wait; }
+  .rodape { text-align: center; font-size: 12.5px; color: #777; padding: 14px; background: #f4f6fa; }
+</style>
+</head>
+<body>
+
+<div class="formulario" id="formulario">
+  <div class="cabecalho">
+    <h1>SENAI VIENA</h1>
+    <div class="info">
+      <span><strong>Data:</strong> 30.09</span>
+      <span><strong>Autor:</strong> Vitor Manoel da Silva Carvalho</span>
+      <span><strong>Instrutor:</strong> Samuel Nascimento</span>
+    </div>
+  </div>
+
+  <div class="corpo">
+    <div class="pergunta">
+      <label>1. O que é gestão do tempo e por que ela é importante?</label>
+      <textarea id="r1" placeholder="Digite sua resposta..."></textarea>
+    </div>
+    <div class="pergunta">
+      <label>2. Quais são os principais passos para organizar sua rotina diária?</label>
+      <textarea id="r2" placeholder="Digite sua resposta..."></textarea>
+    </div>
+    <div class="pergunta">
+      <label>3. O que é a Matriz de Eisenhower e como ela ajuda na priorização de tarefas?</label>
+      <textarea id="r3" placeholder="Digite sua resposta..."></textarea>
+    </div>
+    <div class="pergunta">
+      <label>4. Quais ferramentas podem auxiliar na gestão do tempo?</label>
+      <textarea id="r4" placeholder="Digite sua resposta..."></textarea>
+    </div>
+    <div class="pergunta">
+      <label>5. Como evitar a procrastinação no dia a dia?</label>
+      <textarea id="r5" placeholder="Digite sua resposta..."></textarea>
+    </div>
+    <div class="pergunta">
+      <label>6. O que são "ladrões de tempo" e como identificá-los?</label>
+      <textarea id="r6" placeholder="Digite sua resposta..."></textarea>
+    </div>
+    <div class="pergunta">
+      <label>7. Como a definição de metas SMART contribui para uma melhor gestão do tempo?</label>
+      <textarea id="r7" placeholder="Digite sua resposta..."></textarea>
+    </div>
+    <div class="pergunta">
+      <label>8. Qual a importância de fazer pausas e descanso durante o trabalho?</label>
+      <textarea id="r8" placeholder="Digite sua resposta..."></textarea>
+    </div>
+
+    <div class="acoes">
+      <button id="btnSalvar" onclick="salvarPDF()">Salvar Respostas em PDF</button>
+    </div>
+  </div>
+
+  <div class="rodape">Guia de Organização e Gestão do Tempo — SENAI VIENA</div>
+</div>
+
+<script>
+async function salvarPDF() {
+  const btn = document.getElementById('btnSalvar');
+  btn.disabled = true;
+  btn.textContent = 'Gerando PDF...';
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const elemento = document.getElementById('formulario');
+
+    const canvas = await html2canvas(elemento, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const larguraPagina = pdf.internal.pageSize.getWidth();
+    const alturaPagina = pdf.internal.pageSize.getHeight();
+
+    const larguraImg = larguraPagina;
+    const alturaImg = (canvas.height * larguraImg) / canvas.width;
+
+    if (alturaImg <= alturaPagina) {
+      pdf.addImage(imgData, 'PNG', 0, 0, larguraImg, alturaImg);
+    } else {
+      let alturaRestante = alturaImg;
+      let posicao = 0;
+      pdf.addImage(imgData, 'PNG', 0, posicao, larguraImg, alturaImg);
+      alturaRestante -= alturaPagina;
+      while (alturaRestante > 0) {
+        posicao -= alturaPagina;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, posicao, larguraImg, alturaImg);
+        alturaRestante -= alturaPagina;
+      }
+    }
+
+    pdf.save('respostas-gestao-do-tempo.pdf');
+  } catch (erro) {
+    alert('Erro ao gerar o PDF: ' + erro.message);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar Respostas em PDF';
+}
+</script>
+
+</body>
+</html>
